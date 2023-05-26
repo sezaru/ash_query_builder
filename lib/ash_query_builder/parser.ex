@@ -1,8 +1,9 @@
 defmodule AshQueryBuilder.Parser do
   @moduledoc false
 
-  def parse(args) do
-    %{"f" => filters, "s" => sorters} = args
+  def parse(args) when is_map(args) do
+    sorters = Map.get(args, "s", %{})
+    filters = Map.get(args, "f", %{})
 
     AshQueryBuilder.new()
     |> parse_filters(filters)
