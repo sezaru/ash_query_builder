@@ -27,15 +27,15 @@ alias Plug.Conn.Query
 builder = AshQueryBuilder.new()
 
 # Now we can add multiple types of filters to it.
-builder = AshQueryBuilder.add_filter(builder, :updated_at, :<, DateTime.utc_now())
-builder = AshQueryBuilder.add_filter(builder, :first_name, "in", ["blibs", "blobs"])
-builder = AshQueryBuilder.add_filter(builder, [:organization], :name, :ilike, "Rebuilt")
-builder = AshQueryBuilder.add_filter(builder, :created_by, :is_nil, nil)
-builder = AshQueryBuilder.add_filter(builder, :surname, :left_word_similarity, "blobs")
+{builder, filter_1} = AshQueryBuilder.add_filter(builder, :updated_at, :<, DateTime.utc_now())
+{builder, _} = AshQueryBuilder.add_filter(builder, :first_name, "in", ["blibs", "blobs"])
+{builder, _} = AshQueryBuilder.add_filter(builder, [:organization], :name, :ilike, "MyOrg")
+{builder, _} = AshQueryBuilder.add_filter(builder, :created_by, :is_nil, nil)
+{builder, _} = AshQueryBuilder.add_filter(builder, :surname, :left_word_similarity, "blobs")
 
 # We can also add sorting rules
-builder = AshQueryBuilder.add_sorter(builder, :updated_at, :desc)
-builder = AshQueryBuilder.add_sorter(builder, :first_name, :asc)
+{builder, sorter_1} = AshQueryBuilder.add_sorter(builder, :updated_at, :desc)
+{builder, _} = AshQueryBuilder.add_sorter(builder, :first_name, :asc)
 
 # This will generate a map that can be stored into a URL query parameters
 query_params = AshQueryBuilder.to_params(builder)
@@ -53,6 +53,11 @@ query = AshQueryBuilder.to_query(builder, query)
 
 # And run the query
 Example.MyApi.read!(query)
+
+# We can also remove filters and sorters by id
+
+builder = AshQueryFilter.remove_filter(builder, filter_1.id)
+builder = AshQueryFilter.remove_sorter(builder, sorter_1.id)
 ```
 
 ## Expanding
