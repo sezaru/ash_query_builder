@@ -27,14 +27,14 @@ defmodule AshQueryBuilder do
     {%{builder | filters: [filter] ++ builder.filters}, filter}
   end
 
-  def add_sorter(builder, sorter) do
-    {%{builder | sorters: [sorter] ++ builder.sorters}, sorter}
-  end
-
   def remove_filter(builder, id) do
     filters = Enum.reject(builder.filters, fn filter -> filter.id == id end)
 
     %{builder | filters: filters}
+  end
+
+  def add_sorter(builder, sorter) do
+    {%{builder | sorters: [sorter] ++ builder.sorters}, sorter}
   end
 
   def add_sorter(builder, field, order) when is_binary(order) do
