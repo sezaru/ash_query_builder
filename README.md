@@ -28,14 +28,14 @@ builder = AshQueryBuilder.new()
 
 # Now we can add multiple types of filters to it.
 {builder, filter_1} = AshQueryBuilder.add_filter(builder, :updated_at, :<, DateTime.utc_now())
-{builder, _} = AshQueryBuilder.add_filter(builder, :first_name, "in", ["blibs", "blobs"])
+{builder, filter_2} = AshQueryBuilder.add_filter(builder, :first_name, "in", ["blibs", "blobs"])
 {builder, _} = AshQueryBuilder.add_filter(builder, [:organization], :name, :ilike, "MyOrg")
 {builder, _} = AshQueryBuilder.add_filter(builder, :created_by, :is_nil, nil)
 {builder, _} = AshQueryBuilder.add_filter(builder, :surname, :left_word_similarity, "blobs")
 
 # We can also add sorting rules
 {builder, sorter_1} = AshQueryBuilder.add_sorter(builder, :updated_at, :desc)
-{builder, _} = AshQueryBuilder.add_sorter(builder, :first_name, :asc)
+{builder, sorter_2} = AshQueryBuilder.add_sorter(builder, :first_name, :asc)
 
 # This will generate a map that can be stored into a URL query parameters
 query_params = AshQueryBuilder.to_params(builder)
@@ -55,10 +55,15 @@ query = AshQueryBuilder.to_query(builder, query)
 Example.MyApi.read!(query)
 
 # We can also remove filters and sorters by id
+builder = AshQueryBuilder.remove_filter(builder, filter_1.id)
+builder = AshQueryBuilder.remove_sorter(builder, sorter_1.id)
 
-builder = AshQueryFilter.remove_filter(builder, filter_1.id)
-builder = AshQueryFilter.remove_sorter(builder, sorter_1.id)
-```
+# And replace existing ones
+{:error, :not_found} = AshQueryBuilder.replace_filter(builder, filter_1.id, :updated_at, :<, DateTime.utc_now())
+{:ok, builder} = AshQueryBuilder.replace_filter(builder, filter_2.id, :first_name, :in, ["blibs", "blubs"])
+
+{:error, :not_found} = AshQueryBuilder.replace_sorter(builder, sorter_1.id, :updated_at, :asc)
+{:ok, builder} = AshQueryBuilder.replace_sorter(builder, filter_2.id, :first_name, :desc)
 
 ## Expanding
 
