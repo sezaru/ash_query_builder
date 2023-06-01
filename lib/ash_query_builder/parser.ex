@@ -24,7 +24,9 @@ defmodule AshQueryBuilder.Parser do
 
       filter = AshQueryBuilder.Filter.new(id, path, field, operator, value)
 
-      AshQueryBuilder.add_filter(builder, filter)
+      {builder, _} = AshQueryBuilder.add_filter(builder, filter)
+
+      builder
     end)
   end
 
@@ -41,7 +43,9 @@ defmodule AshQueryBuilder.Parser do
 
       sorter = AshQueryBuilder.Sorter.new(id, field, order)
 
-      AshQueryBuilder.add_sorter(builder, sorter)
+      {builder, _} = AshQueryBuilder.add_sorter(builder, sorter)
+
+      builder
     end)
   end
 end
