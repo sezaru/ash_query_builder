@@ -64,6 +64,7 @@ builder = AshQueryBuilder.remove_sorter(builder, sorter_1.id)
 
 {:error, :not_found} = AshQueryBuilder.replace_sorter(builder, sorter_1.id, :updated_at, :asc)
 {:ok, builder} = AshQueryBuilder.replace_sorter(builder, filter_2.id, :first_name, :desc)
+```
 
 ## Expanding
 
