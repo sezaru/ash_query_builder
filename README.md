@@ -10,7 +10,7 @@ by adding `ash_query_builder` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:ash_query_builder, "~> 0.3.0"}
+    {:ash_query_builder, "~> 0.3.1"}
   ]
 end
 ```
