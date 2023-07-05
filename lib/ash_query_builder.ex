@@ -30,15 +30,13 @@ defmodule AshQueryBuilder do
   def replace_filter(builder, id, field, operator, value, opts),
     do: replace_filter(builder, id, [], field, operator, value, opts)
 
-  def replace_filter(builder, id, path, field, operator, value, opts)
-      when is_integer(id) and is_binary(operator) do
+  def replace_filter(builder, id, path, field, operator, value, opts) when is_binary(operator) do
     operator = String.to_existing_atom(operator)
 
     replace_filter(builder, id, path, field, operator, value, opts)
   end
 
-  def replace_filter(builder, id, path, field, operator, value, opts)
-      when is_integer(id) and is_atom(operator) do
+  def replace_filter(builder, id, path, field, operator, value, opts) when is_atom(operator) do
     %{filters: filters} = builder
 
     case Enum.find_index(filters, fn filter -> filter.id == id end) do
@@ -55,7 +53,7 @@ defmodule AshQueryBuilder do
     end
   end
 
-  def enable_filter(builder, id) when is_integer(id) do
+  def enable_filter(builder, id) do
     %{filters: filters} = builder
 
     case Enum.find_index(filters, fn filter -> filter.id == id end) do
@@ -70,7 +68,7 @@ defmodule AshQueryBuilder do
     end
   end
 
-  def disable_filter(builder, id) when is_integer(id) do
+  def disable_filter(builder, id) do
     %{filters: filters} = builder
 
     case Enum.find_index(filters, fn filter -> filter.id == id end) do

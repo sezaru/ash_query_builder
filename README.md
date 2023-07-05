@@ -27,7 +27,7 @@ alias Plug.Conn.Query
 builder = AshQueryBuilder.new()
 
 # Now we can add multiple types of filters to it.
-{builder, filter_1} = AshQueryBuilder.add_filter(builder, :updated_at, :<, DateTime.utc_now(), [])
+{builder, filter_1} = AshQueryBuilder.add_filter(builder, :updated_at, :<, DateTime.utc_now(), id: "my_custom_id")
 {builder, filter_2} = AshQueryBuilder.add_filter(builder, :first_name, "in", ["blibs", "blobs"], [])
 {builder, _} = AshQueryBuilder.add_filter(builder, [:organization], :name, :ilike, "MyOrg", enabled?: false)
 {builder, _} = AshQueryBuilder.add_filter(builder, :created_by, :is_nil, nil, [])

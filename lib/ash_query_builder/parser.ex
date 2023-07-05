@@ -14,11 +14,11 @@ defmodule AshQueryBuilder.Parser do
     filters
     |> Enum.sort_by(fn {id, _} -> id end)
     |> Enum.reduce(builder, fn {id, values}, builder ->
-      id = String.to_integer(id)
+      id = parse_id(id)
 
       %{"f" => field, "o" => operator, "v" => value} = values
 
-      enabled? = values |> Map.get(values, "e", "true") |> String.to_existing_atom()
+      enabled? = values |> Map.get("e", "true") |> String.to_existing_atom()
 
       path = values |> Map.get("p", []) |> Enum.map(&String.to_existing_atom/1)
       field = String.to_existing_atom(field)
@@ -36,7 +36,7 @@ defmodule AshQueryBuilder.Parser do
     sorters
     |> Enum.sort_by(fn {id, _} -> id end)
     |> Enum.reduce(builder, fn {id, values}, builder ->
-      id = String.to_integer(id)
+      id = parse_id(id)
 
       %{"f" => field, "o" => order} = values
 
@@ -50,4 +50,7 @@ defmodule AshQueryBuilder.Parser do
       builder
     end)
   end
+
+  defp parse_id("id:" <> id), do: id
+  defp parse_id(id), do: String.to_integer(id)
 end

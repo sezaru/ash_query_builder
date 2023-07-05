@@ -16,6 +16,8 @@ defmodule AshQueryBuilder.ToParams do
     filters
     |> maybe_filter_out_disabled(with_disabled?)
     |> Enum.map(fn filter ->
+      id = maybe_process_id(filter.id)
+
       values = %{
         "p" => filter.path,
         "f" => filter.field,
@@ -25,7 +27,7 @@ defmodule AshQueryBuilder.ToParams do
 
       values = maybe_add_enabled_flag(values, filter, with_disabled?)
 
-      {filter.id, values}
+      {id, values}
     end)
     |> Enum.into(%{})
   end
@@ -37,6 +39,9 @@ defmodule AshQueryBuilder.ToParams do
     end)
     |> Enum.into(%{})
   end
+
+  defp maybe_process_id(id) when is_integer(id), do: id
+  defp maybe_process_id(id) when is_binary(id), do: "id:#{id}"
 
   defp maybe_filter_out_disabled(filters, false), do: Enum.filter(filters, & &1.enabled?)
   defp maybe_filter_out_disabled(filters, true), do: filters
