@@ -38,7 +38,7 @@ builder = AshQueryBuilder.new()
 {builder, sorter_2} = AshQueryBuilder.add_sorter(builder, :first_name, :asc)
 
 # This will generate a map that can be stored into a URL query parameters
-query_params = AshQueryBuilder.to_params(builder)
+query_params = AshQueryBuilder.to_params(builder, with_disabled?: true)
 
 # This will generate the URL query parameters, it is similar to just calling ~p"my_url?#{query_params}"
 url_query_params = Query.encode(query_params)
