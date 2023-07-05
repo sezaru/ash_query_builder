@@ -42,7 +42,7 @@ defmodule AshQueryBuilder.Filter do
   def new(id, path, field, operator, value, opts),
     do: filter_module!(operator).new(id, path, field, value, opts)
 
-  def filter_module!(operator) when is_atom(operator),
+  defp filter_module!(operator) when is_atom(operator),
     do: Map.fetch!(filters(), operator)
 
   defmemop filters, permanent: true do
