@@ -4,7 +4,7 @@ defmodule AshQueryBuilder.ToQuery do
   alias AshQueryBuilder.Filter.Protocol
 
   def generate(query, filters, sorters) do
-    query = Enum.reduce(filters, query, &Protocol.to_filter/2)
+    query = filters |> Enum.filter(& &1.enabled?) |> Enum.reduce(query, &Protocol.to_filter/2)
 
     Enum.reduce(sorters, query, fn sorter, query ->
       Ash.Query.sort(query, [{sorter.field, sorter.order}])

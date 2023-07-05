@@ -27,11 +27,11 @@ alias Plug.Conn.Query
 builder = AshQueryBuilder.new()
 
 # Now we can add multiple types of filters to it.
-{builder, filter_1} = AshQueryBuilder.add_filter(builder, :updated_at, :<, DateTime.utc_now())
-{builder, filter_2} = AshQueryBuilder.add_filter(builder, :first_name, "in", ["blibs", "blobs"])
-{builder, _} = AshQueryBuilder.add_filter(builder, [:organization], :name, :ilike, "MyOrg")
-{builder, _} = AshQueryBuilder.add_filter(builder, :created_by, :is_nil, nil)
-{builder, _} = AshQueryBuilder.add_filter(builder, :surname, :left_word_similarity, "blobs")
+{builder, filter_1} = AshQueryBuilder.add_filter(builder, :updated_at, :<, DateTime.utc_now(), [])
+{builder, filter_2} = AshQueryBuilder.add_filter(builder, :first_name, "in", ["blibs", "blobs"], [])
+{builder, _} = AshQueryBuilder.add_filter(builder, [:organization], :name, :ilike, "MyOrg", enabled?: false)
+{builder, _} = AshQueryBuilder.add_filter(builder, :created_by, :is_nil, nil, [])
+{builder, _} = AshQueryBuilder.add_filter(builder, :surname, :left_word_similarity, "blobs", [])
 
 # We can also add sorting rules
 {builder, sorter_1} = AshQueryBuilder.add_sorter(builder, :updated_at, :desc)
@@ -59,11 +59,11 @@ builder = AshQueryBuilder.remove_filter(builder, filter_1.id)
 builder = AshQueryBuilder.remove_sorter(builder, sorter_1.id)
 
 # And replace existing ones
-{:error, :not_found} = AshQueryBuilder.replace_filter(builder, filter_1.id, :updated_at, :<, DateTime.utc_now())
-{:ok, builder} = AshQueryBuilder.replace_filter(builder, filter_2.id, :first_name, :in, ["blibs", "blubs"])
+{:error, :not_found} = AshQueryBuilder.replace_filter(builder, filter_1.id, :updated_at, :<, DateTime.utc_now(), [])
+{:ok, builder} = AshQueryBuilder.replace_filter(builder, filter_2.id, :first_name, :in, ["blibs", "blubs"], [])
 
-{:error, :not_found} = AshQueryBuilder.replace_sorter(builder, sorter_1.id, :updated_at, :asc)
-{:ok, builder} = AshQueryBuilder.replace_sorter(builder, filter_2.id, :first_name, :desc)
+{:error, :not_found} = AshQueryBuilder.replace_sorter(builder, sorter_1.id, :updated_at, :asc, [])
+{:ok, builder} = AshQueryBuilder.replace_sorter(builder, filter_2.id, :first_name, :desc, [])
 ```
 
 ## Expanding
@@ -79,8 +79,11 @@ defmodule MyFilter do
   use AshQueryBuilder.Filter, operator: :by_radius
 
   @impl true
-  def new(id, path, field, value),
-    do: struct(__MODULE__, id: id, field: field, path: path, value: value)
+  def new(id, path, field, value, opts) do
+    enabled? = Keyword.get(opts, :enabled?, true)
+
+    struct(__MODULE__, id: id, field: field, path: path, value: value, enabled?: enabled?)
+  end
 end
 
 defimpl AshQueryBuilder.Filter.Protocol, for: MyFilter do

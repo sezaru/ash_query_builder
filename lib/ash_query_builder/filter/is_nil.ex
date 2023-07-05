@@ -4,8 +4,11 @@ defmodule AshQueryBuilder.Filter.IsNil do
   use AshQueryBuilder.Filter, operator: :is_nil
 
   @impl true
-  def new(id, path, field, _),
-    do: struct(__MODULE__, id: id, field: field, path: path)
+  def new(id, path, field, _, opts) do
+    enabled? = Keyword.get(opts, :enabled?, true)
+
+    struct(__MODULE__, id: id, field: field, path: path, enabled?: enabled?)
+  end
 end
 
 defimpl AshQueryBuilder.Filter.Protocol, for: AshQueryBuilder.Filter.IsNil do

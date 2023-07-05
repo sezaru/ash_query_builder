@@ -11,33 +11,33 @@ defmodule AshQueryBuilder do
     {%{builder | filters: [filter] ++ builder.filters}, filter}
   end
 
-  def add_filter(builder, field, operator, value) do
-    add_filter(builder, [], field, operator, value)
+  def add_filter(builder, field, operator, value, opts) do
+    add_filter(builder, [], field, operator, value, opts)
   end
 
-  def add_filter(builder, path, field, operator, value) when is_binary(operator) do
+  def add_filter(builder, path, field, operator, value, opts) when is_binary(operator) do
     operator = String.to_existing_atom(operator)
 
-    add_filter(builder, path, field, operator, value)
+    add_filter(builder, path, field, operator, value, opts)
   end
 
-  def add_filter(builder, path, field, operator, value) when is_atom(operator) do
-    filter = Filter.new(path, field, operator, value)
+  def add_filter(builder, path, field, operator, value, opts) when is_atom(operator) do
+    filter = Filter.new(path, field, operator, value, opts)
 
     {%{builder | filters: [filter] ++ builder.filters}, filter}
   end
 
-  def replace_filter(builder, id, field, operator, value),
-    do: replace_filter(builder, id, [], field, operator, value)
+  def replace_filter(builder, id, field, operator, value, opts),
+    do: replace_filter(builder, id, [], field, operator, value, opts)
 
-  def replace_filter(builder, id, path, field, operator, value)
+  def replace_filter(builder, id, path, field, operator, value, opts)
       when is_integer(id) and is_binary(operator) do
     operator = String.to_existing_atom(operator)
 
-    replace_filter(builder, id, path, field, operator, value)
+    replace_filter(builder, id, path, field, operator, value, opts)
   end
 
-  def replace_filter(builder, id, path, field, operator, value)
+  def replace_filter(builder, id, path, field, operator, value, opts)
       when is_integer(id) and is_atom(operator) do
     %{filters: filters} = builder
 
@@ -47,7 +47,39 @@ defmodule AshQueryBuilder do
 
       index ->
         filters =
-          List.update_at(filters, index, fn _ -> Filter.new(id, path, field, operator, value) end)
+          List.update_at(filters, index, fn _ ->
+            Filter.new(id, path, field, operator, value, opts)
+          end)
+
+        {:ok, %{builder | filters: filters}}
+    end
+  end
+
+  def enable_filter(builder, id) when is_integer(id) do
+    %{filters: filters} = builder
+
+    case Enum.find_index(filters, fn filter -> filter.id == id end) do
+      nil ->
+        {:error, :not_found}
+
+      index ->
+        filters =
+          List.update_at(filters, index, fn filter -> %{filter | enabled?: true} end)
+
+        {:ok, %{builder | filters: filters}}
+    end
+  end
+
+  def disable_filter(builder, id) when is_integer(id) do
+    %{filters: filters} = builder
+
+    case Enum.find_index(filters, fn filter -> filter.id == id end) do
+      nil ->
+        {:error, :not_found}
+
+      index ->
+        filters =
+          List.update_at(filters, index, fn filter -> %{filter | enabled?: true} end)
 
         {:ok, %{builder | filters: filters}}
     end
@@ -108,7 +140,7 @@ defmodule AshQueryBuilder do
     ToQuery.generate(query, filters, sorters)
   end
 
-  def to_params(builder), do: ToParams.generate(builder)
+  def to_params(builder, opts \\ []), do: ToParams.generate(builder, opts)
 
   def parse(args), do: Parser.parse(args)
 end

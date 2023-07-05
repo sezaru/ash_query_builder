@@ -7,13 +7,19 @@ defmodule AshQueryBuilder.Filter do
 
   @callback operator :: atom
 
-  @callback new(non_neg_integer, [atom], atom, any) :: Protocol.t()
+  @callback new(non_neg_integer, [atom], atom, any, Keyword.t()) :: Protocol.t()
 
   defmacro __using__(operator: operator) do
     quote do
-      @type t :: %__MODULE__{id: non_neg_integer, field: atom, path: [atom], value: any}
+      @type t :: %__MODULE__{
+              id: non_neg_integer,
+              field: atom,
+              path: [atom],
+              value: any,
+              enabled?: boolean
+            }
 
-      defstruct [:id, :field, :path, :value]
+      defstruct [:id, :field, :path, :value, :enabled?]
 
       import Ash.Query
 
@@ -24,10 +30,17 @@ defmodule AshQueryBuilder.Filter do
     end
   end
 
-  def new(field, operator, value), do: new([], field, operator, value)
+  def new(field, operator, value, opts), do: new([], field, operator, value, opts)
 
-  def new(id \\ :erlang.unique_integer([:monotonic, :positive]), path, field, operator, value) do
-    filter_module!(operator).new(id, path, field, value)
+  def new(
+        id \\ :erlang.unique_integer([:monotonic, :positive]),
+        path,
+        field,
+        operator,
+        value,
+        opts
+      ) do
+    filter_module!(operator).new(id, path, field, value, opts)
   end
 
   def filter_module!(operator) when is_atom(operator),

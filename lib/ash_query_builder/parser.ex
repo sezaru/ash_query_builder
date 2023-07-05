@@ -18,11 +18,13 @@ defmodule AshQueryBuilder.Parser do
 
       %{"f" => field, "o" => operator, "v" => value} = values
 
+      enabled? = values |> Map.get(values, "e", "true") |> String.to_existing_atom()
+
       path = values |> Map.get("p", []) |> Enum.map(&String.to_existing_atom/1)
       field = String.to_existing_atom(field)
       operator = String.to_existing_atom(operator)
 
-      filter = AshQueryBuilder.Filter.new(id, path, field, operator, value)
+      filter = AshQueryBuilder.Filter.new(id, path, field, operator, value, enabled?: enabled?)
 
       {builder, _} = AshQueryBuilder.add_filter(builder, filter)
 

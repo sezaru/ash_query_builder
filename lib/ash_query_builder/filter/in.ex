@@ -4,8 +4,11 @@ defmodule AshQueryBuilder.Filter.In do
   use AshQueryBuilder.Filter, operator: :in
 
   @impl true
-  def new(id, path, field, value) when is_list(value),
-    do: struct(__MODULE__, id: id, field: field, path: path, value: value)
+  def new(id, path, field, value, opts) when is_list(value) do
+    enabled? = Keyword.get(opts, :enabled?, true)
+
+    struct(__MODULE__, id: id, field: field, path: path, value: value, enabled?: enabled?)
+  end
 end
 
 defimpl AshQueryBuilder.Filter.Protocol, for: AshQueryBuilder.Filter.In do
