@@ -53,6 +53,9 @@ defmodule AshQueryBuilder do
     end
   end
 
+  def find_filter(%{filters: filters}, id),
+    do: Enum.find(filters, fn filter -> filter.id == id end)
+
   def enable_filter(builder, id) do
     %{filters: filters} = builder
 
