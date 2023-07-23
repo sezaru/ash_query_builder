@@ -125,6 +125,9 @@ defmodule AshQueryBuilder do
     end
   end
 
+  def find_sorter(%{sorters: sorters}, id),
+    do: Enum.find(sorters, fn sorter -> sorter.id == id end)
+
   def remove_sorter(builder, id) do
     sorters = Enum.reject(builder.sorters, fn filter -> filter.id == id end)
 
