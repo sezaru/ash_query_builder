@@ -4,7 +4,7 @@ defmodule AshQueryBuilder.MixProject do
   @app :ash_query_builder
   @name "AshQueryBuilder"
   @description "A simple query builder helper for Ash.Query"
-  @version "0.4.0"
+  @version "0.4.1"
   @github "https://github.com/sezaru/#{@app}"
   @author "Eduardo Barreto Alexandre"
   @license "MIT"
