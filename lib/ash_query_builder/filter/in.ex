@@ -6,8 +6,16 @@ defmodule AshQueryBuilder.Filter.In do
   @impl true
   def new(id, path, field, value, opts) when is_list(value) do
     enabled? = Keyword.get(opts, :enabled?, true)
+    metadata = Keyword.get(opts, :metadata)
 
-    struct(__MODULE__, id: id, field: field, path: path, value: value, enabled?: enabled?)
+    struct(__MODULE__,
+      id: id,
+      field: field,
+      path: path,
+      value: value,
+      enabled?: enabled?,
+      metadata: metadata
+    )
   end
 end
 

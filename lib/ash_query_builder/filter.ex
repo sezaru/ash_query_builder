@@ -17,10 +17,11 @@ defmodule AshQueryBuilder.Filter do
               field: atom,
               path: [atom],
               value: any,
-              enabled?: boolean
+              enabled?: boolean,
+              metadata: map | nil
             }
 
-      defstruct [:id, :field, :path, :value, :enabled?]
+      defstruct [:id, :field, :path, :value, :enabled?, :metadata]
 
       import Ash.Query
 

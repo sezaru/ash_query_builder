@@ -25,7 +25,8 @@ defmodule AshQueryBuilder.ToParams do
         "v" => filter.value
       }
 
-      values = maybe_add_enabled_flag(values, filter, with_disabled?)
+      values =
+        values |> maybe_add_enabled_flag(filter, with_disabled?) |> maybe_add_metadata(filter)
 
       {id, values}
     end)
@@ -48,4 +49,7 @@ defmodule AshQueryBuilder.ToParams do
 
   defp maybe_add_enabled_flag(values, _, false), do: values
   defp maybe_add_enabled_flag(values, filter, true), do: Map.put(values, "e", filter.enabled?)
+
+  defp maybe_add_metadata(values, %{metadata: nil}), do: values
+  defp maybe_add_metadata(values, %{metadata: metadata}), do: Map.put(values, "m", metadata)
 end
