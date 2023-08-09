@@ -23,7 +23,7 @@ defimpl AshQueryBuilder.Filter.Protocol, for: AshQueryBuilder.Filter.LeftWordSim
   use AshQueryBuilder.Filter.QueryHelpers
 
   def to_filter(filter, query) do
-    Ash.Query.filter(query, expr(fragment("? <% ?", ^make_ref(filter), ^filter.value)))
+    Ash.Query.filter(query, expr(fragment("(? <% ?)", ^make_ref(filter), ^filter.value)))
   end
 
   def operator(_), do: AshQueryBuilder.Filter.LeftWordSimilarity.operator()
