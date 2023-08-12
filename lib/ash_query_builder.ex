@@ -53,8 +53,17 @@ defmodule AshQueryBuilder do
     end
   end
 
-  def find_filter(%{filters: filters}, id),
-    do: Enum.find(filters, fn filter -> filter.id == id end)
+  def find_filter(%{filters: filters}, id, opts \\ []) do
+    only_enabled? = Keyword.get(opts, :only_enabled?, false)
+
+    Enum.find(filters, fn filter ->
+      if only_enabled? do
+        filter.id == id and filter.enabled?
+      else
+        filter.id == id
+      end
+    end)
+  end
 
   def enable_filter(builder, id) do
     %{filters: filters} = builder
