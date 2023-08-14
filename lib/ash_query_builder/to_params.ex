@@ -36,7 +36,9 @@ defmodule AshQueryBuilder.ToParams do
   defp sorters_to_params(sorters) do
     sorters
     |> Enum.map(fn sorter ->
-      {sorter.id, %{"f" => sorter.field, "o" => sorter.order}}
+      id = maybe_process_id(sorter.id)
+
+      {id, %{"f" => sorter.field, "o" => sorter.order}}
     end)
     |> Enum.into(%{})
   end
