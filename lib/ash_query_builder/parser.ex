@@ -1,6 +1,8 @@
 defmodule AshQueryBuilder.Parser do
   @moduledoc false
 
+  alias AshQueryBuilder.{Filter, Sorter}
+
   def parse(args) when is_map(args) do
     sorters = Map.get(args, "s", %{})
     filters = Map.get(args, "f", %{})
@@ -26,14 +28,9 @@ defmodule AshQueryBuilder.Parser do
       operator = String.to_existing_atom(operator)
 
       filter =
-        AshQueryBuilder.Filter.new(id, path, field, operator, value,
-          enabled?: enabled?,
-          metadata: metadata
-        )
+        Filter.new(id, path, field, operator, value, enabled?: enabled?, metadata: metadata)
 
-      {builder, _} = AshQueryBuilder.add_filter(builder, filter)
-
-      builder
+      AshQueryBuilder.add_filter(builder, filter)
     end)
   end
 
@@ -48,11 +45,9 @@ defmodule AshQueryBuilder.Parser do
       field = String.to_existing_atom(field)
       order = String.to_existing_atom(order)
 
-      sorter = AshQueryBuilder.Sorter.new(id, field, order)
+      sorter = Sorter.new(id, field, order)
 
-      {builder, _} = AshQueryBuilder.add_sorter(builder, sorter)
-
-      builder
+      AshQueryBuilder.add_sorter(builder, sorter)
     end)
   end
 
