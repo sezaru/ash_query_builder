@@ -3,7 +3,9 @@ defmodule AshQueryBuilder.Parser do
 
   alias AshQueryBuilder.{Filter, Sorter}
 
-  def parse(args) when is_map(args) do
+  def parse(args) do
+    args = args |> Base.decode64!() |> :erlang.binary_to_term()
+
     sorters = Map.get(args, "s", %{})
     filters = Map.get(args, "f", %{})
 
@@ -16,16 +18,12 @@ defmodule AshQueryBuilder.Parser do
     filters
     |> Enum.sort_by(fn {id, _} -> id end)
     |> Enum.reduce(builder, fn {id, values}, builder ->
-      id = parse_id(id)
-
       %{"f" => field, "o" => operator, "v" => value} = values
 
-      enabled? = values |> Map.get("e", "true") |> String.to_existing_atom()
+      enabled? = Map.get(values, "e", true)
       metadata = Map.get(values, "m")
 
-      path = values |> Map.get("p", []) |> Enum.map(&String.to_existing_atom/1)
-      field = String.to_existing_atom(field)
-      operator = String.to_existing_atom(operator)
+      path = Map.get(values, "p", [])
 
       filter =
         Filter.new(id, path, field, operator, value, enabled?: enabled?, metadata: metadata)
@@ -38,19 +36,11 @@ defmodule AshQueryBuilder.Parser do
     sorters
     |> Enum.sort_by(fn {id, _} -> id end)
     |> Enum.reduce(builder, fn {id, values}, builder ->
-      id = parse_id(id)
-
       %{"f" => field, "o" => order} = values
-
-      field = String.to_existing_atom(field)
-      order = String.to_existing_atom(order)
 
       sorter = Sorter.new(id, field, order)
 
       AshQueryBuilder.add_sorter(builder, sorter)
     end)
   end
-
-  defp parse_id("id:" <> id), do: id
-  defp parse_id(id), do: String.to_integer(id)
 end
