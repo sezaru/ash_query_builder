@@ -23,8 +23,6 @@ defmodule AshQueryBuilder.Filter do
 
       defstruct [:id, :field, :path, :value, :enabled?, :metadata]
 
-      import Ash.Query
-
       @behaviour AshQueryBuilder.Filter
 
       @impl true
