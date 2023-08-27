@@ -15,9 +15,7 @@ end
 defimpl AshQueryBuilder.Filter.Protocol, for: AshQueryBuilder.Filter.IsNil do
   use AshQueryBuilder.Filter.QueryHelpers
 
-  def to_filter(filter, query) do
-    Ash.Query.filter(query, expr(is_nil(^make_ref(filter))))
-  end
+  def to_expression(filter), do: expr(is_nil(^make_ref(filter)))
 
   def operator(_), do: AshQueryBuilder.Filter.IsNil.operator()
 end

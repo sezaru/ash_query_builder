@@ -1,13 +1,30 @@
 defmodule AshQueryBuilder.ToQuery do
   @moduledoc false
 
-  alias AshQueryBuilder.Filter.Protocol
+  alias AshQueryBuilder.{FilterScope, Filter.Protocol}
+
+  import Ash.Query
 
   def generate(query, filters, sorters) do
-    query = filters |> Enum.filter(& &1.enabled?) |> Enum.reduce(query, &Protocol.to_filter/2)
+    filters = filters |> Enum.map(&to_expression/1) |> Enum.reject(&is_nil/1)
+
+    {:ok, filter} = Ash.Filter.parse(query.resource, filters)
+
+    query = Ash.Query.filter(query, expr(^filter))
 
     Enum.reduce(sorters, query, fn sorter, query ->
       Ash.Query.sort(query, [{sorter.field, sorter.order}], prepend?: true)
     end)
   end
+
+  defp to_expression(%FilterScope{filters: []}), do: []
+
+  defp to_expression(%FilterScope{filters: filters} = scope) do
+    filters = filters |> Enum.map(&to_expression/1) |> Enum.reject(&is_nil/1)
+
+    [{scope.operation, filters}]
+  end
+
+  defp to_expression(%{enabled?: true} = filter), do: Protocol.to_expression(filter)
+  defp to_expression(%{enabled?: false}), do: nil
 end

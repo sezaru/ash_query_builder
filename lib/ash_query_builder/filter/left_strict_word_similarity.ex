@@ -22,9 +22,7 @@ end
 defimpl AshQueryBuilder.Filter.Protocol, for: AshQueryBuilder.Filter.LeftStrictWordSimilarity do
   use AshQueryBuilder.Filter.QueryHelpers
 
-  def to_filter(filter, query) do
-    Ash.Query.filter(query, expr(fragment("(? <<% ?)", ^make_ref(filter), ^filter.value)))
-  end
+  def to_expression(filter), do: expr(fragment("(? <<% ?)", ^make_ref(filter), ^filter.value))
 
   def operator(_), do: AshQueryBuilder.Filter.LeftStrictWordSimilarity.operator()
 end
