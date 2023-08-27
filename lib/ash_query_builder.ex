@@ -1,38 +1,23 @@
 defmodule AshQueryBuilder do
   @moduledoc false
 
-  alias AshQueryBuilder.{Sorter, ToQuery, ToParams, Parser}
+  alias AshQueryBuilder.{Helper, Sorter, ToQuery, ToParams, Parser}
 
   defstruct filters: [], sorters: []
 
   def new, do: struct!(__MODULE__, %{})
 
-  def add_filter(builder, filter), do: %{builder | filters: [filter] ++ builder.filters}
+  defdelegate add_filter(builder, filter), to: Helper
 
-  def replace_filter(%{filters: filters} = builder, filter) do
-    with {:ok, filters} <- find_and_update(filters, &(&1.id == filter.id), fn _ -> filter end) do
-      {:ok, %{builder | filters: filters}}
-    end
-  end
+  defdelegate replace_filter(builder, filter), to: Helper
 
-  def add_or_replace_filter(builder, filter) do
-    case replace_filter(builder, filter) do
-      {:error, :not_found} -> add_filter(builder, filter)
-      {:ok, builder} -> builder
-    end
-  end
+  defdelegate add_or_replace_filter(builder, filter), to: Helper
 
-  def find_filter(%{filters: filters}, id, opts \\ []) do
-    only_enabled? = Keyword.get(opts, :only_enabled?, false)
+  defdelegate find_filter(builder, id, opts \\ []), to: Helper
 
-    Enum.find(filters, fn filter ->
-      if only_enabled? do
-        filter.id == id and filter.enabled?
-      else
-        filter.id == id
-      end
-    end)
-  end
+  defdelegate remove_filter(builder, id), to: Helper
+
+  defdelegate reset_filters(builder), to: Helper
 
   def enable_filter(%{filters: filters} = builder, id) do
     with {:ok, filters} <- find_and_update(filters, &(&1.id == id), &%{&1 | enabled?: true}) do
@@ -45,14 +30,6 @@ defmodule AshQueryBuilder do
       {:ok, %{builder | filters: filters}}
     end
   end
-
-  def remove_filter(builder, id) do
-    filters = Enum.reject(builder.filters, fn filter -> filter.id == id end)
-
-    %{builder | filters: filters}
-  end
-
-  def reset_filters(builder), do: %{builder | filters: []}
 
   def add_sorter(%{sorters: sorters} = builder, %Sorter{} = sorter),
     do: %{builder | sorters: [sorter] ++ sorters}
