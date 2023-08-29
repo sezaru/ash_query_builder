@@ -6,7 +6,7 @@ defmodule AshQueryBuilder.Helper do
   def add_filter(%{filters: filters} = struct, filter),
     do: %{struct | filters: [filter] ++ filters}
 
-  def replace_filter(%{filter: filters} = struct, filter) do
+  def replace_filter(%{filters: filters} = struct, filter) do
     with {:ok, filters} <- find_and_update(filters, &(&1.id == filter.id), fn _ -> filter end) do
       {:ok, %{struct | filters: filters}}
     end
