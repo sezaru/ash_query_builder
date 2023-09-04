@@ -23,9 +23,11 @@ defimpl AshQueryBuilder.Filter.Protocol, for: AshQueryBuilder.Filter.Between do
   use AshQueryBuilder.Filter.QueryHelpers
 
   def to_expression(filter) do
-    [low, high] = filter.value
-
-    expr(^make_ref(filter) >= ^low and ^make_ref(filter) < ^high)
+    case filter.value do
+      [nil, high] -> expr(^make_ref(filter) <= ^high)
+      [low, nil] -> expr(^make_ref(filter) >= ^low)
+      [low, high] -> expr(fragment("(? between ? and ?)", ^make_ref(filter), ^low, ^high))
+    end
   end
 
   def operator(_), do: AshQueryBuilder.Filter.Between.operator()
