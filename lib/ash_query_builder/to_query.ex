@@ -20,9 +20,10 @@ defmodule AshQueryBuilder.ToQuery do
   defp to_expression(%FilterScope{filters: []}), do: []
 
   defp to_expression(%FilterScope{filters: filters} = scope) do
-    filters = filters |> Enum.map(&to_expression/1) |> Enum.reject(&is_nil/1)
-
-    [{scope.operation, filters}]
+    case filters |> Enum.map(&to_expression/1) |> Enum.reject(&is_nil/1) do
+      [] -> []
+      filters -> [{scope.operation, filters}]
+    end
   end
 
   defp to_expression(%{enabled?: true} = filter), do: Protocol.to_expression(filter)
