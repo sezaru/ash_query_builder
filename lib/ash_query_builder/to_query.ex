@@ -3,7 +3,9 @@ defmodule AshQueryBuilder.ToQuery do
 
   alias AshQueryBuilder.{FilterScope, Filter.Protocol}
 
-  import Ash.Query
+  require Ash.Query
+
+  import Ash.Expr, only: [expr: 1]
 
   def generate(query, filters, sorters) do
     filters = filters |> Enum.map(&to_expression/1) |> Enum.reject(&is_nil/1)

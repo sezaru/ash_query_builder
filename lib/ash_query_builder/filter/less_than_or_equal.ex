@@ -22,7 +22,7 @@ end
 defimpl AshQueryBuilder.Filter.Protocol, for: AshQueryBuilder.Filter.LessThanOrEqual do
   use AshQueryBuilder.Filter.QueryHelpers
 
-  def to_expression(filter), do: expr(^make_ref(filter) <= ^filter.value)
+  def to_expression(filter), do: expr(make_ref(^filter) <= ^filter.value)
 
   def operator(_), do: AshQueryBuilder.Filter.LessThanOrEqual.operator()
 end

@@ -33,7 +33,7 @@ defmodule AshQueryBuilder.MixProject do
       {:excoveralls, "~> 0.16", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.3", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:ash, "~> 2.6"},
+      {:ash, "~> 3.0"},
       {:memoize, "~> 1.4"}
     ]
   end

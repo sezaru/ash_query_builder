@@ -22,7 +22,7 @@ end
 defimpl AshQueryBuilder.Filter.Protocol, for: AshQueryBuilder.Filter.In do
   use AshQueryBuilder.Filter.QueryHelpers
 
-  def to_expression(filter), do: expr(^make_ref(filter) in ^filter.value)
+  def to_expression(filter), do: expr(make_ref(^filter) in ^filter.value)
 
   def operator(_), do: AshQueryBuilder.Filter.In.operator()
 end
