@@ -4,7 +4,7 @@ defmodule AshQueryBuilder.MixProject do
   @app :ash_query_builder
   @name "AshQueryBuilder"
   @description "A simple query builder helper for Ash.Query"
-  @version "0.3.0"
+  @version "0.6.4"
   @github "https://github.com/sezaru/#{@app}"
   @author "Eduardo Barreto Alexandre"
   @license "MIT"
@@ -33,7 +33,7 @@ defmodule AshQueryBuilder.MixProject do
       {:excoveralls, "~> 0.16", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.3", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:ash, "~> 2.6"},
+      {:ash, "~> 3.0"},
       {:memoize, "~> 1.4"}
     ]
   end

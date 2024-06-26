@@ -1,6 +1,6 @@
 defprotocol AshQueryBuilder.Filter.Protocol do
-  @spec to_filter(t, Ash.Query.t()) :: Ash.Query.t()
-  def to_filter(filter, query)
+  @spec to_expression(t) :: Ash.Filter.t()
+  def to_expression(filter)
 
   @spec operator(t) :: atom
   def operator(filter)
