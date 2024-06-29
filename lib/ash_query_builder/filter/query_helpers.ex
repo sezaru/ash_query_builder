@@ -4,14 +4,9 @@ defmodule AshQueryBuilder.Filter.QueryHelpers do
   defmacro __using__(_opts) do
     quote do
       import Ash.Query
+      import Ash.Expr
 
-      defmacro make_ref(filter) do
-        quote do
-          require Ash.Expr
-
-          Ash.Expr.expr(ref(^unquote(filter).field, ^unquote(filter).path))
-        end
-      end
+      def make_ref(filter), do: ref(filter.path, filter.field)
     end
   end
 end
