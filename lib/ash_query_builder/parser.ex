@@ -3,7 +3,9 @@ defmodule AshQueryBuilder.Parser do
 
   alias AshQueryBuilder.{Filter, FilterScope, Sorter}
 
-  def parse(args) do
+  def parse(nil, default), do: default
+
+  def parse(args, _) do
     args = args |> Base.decode64!() |> :erlang.binary_to_term()
 
     sorters = Map.get(args, :s, %{})

@@ -67,7 +67,7 @@ defmodule AshQueryBuilder do
 
   def to_params(builder, opts \\ []), do: ToParams.generate(builder, opts)
 
-  def parse(args), do: Parser.parse(args)
+  def parse(args, default \\ AshQueryBuilder.new()), do: Parser.parse(args, default)
 
   defp find_and_update(list, find_fn, update_fn) do
     case Enum.find_index(list, find_fn) do
