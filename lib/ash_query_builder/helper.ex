@@ -3,6 +3,34 @@ defmodule AshQueryBuilder.Helper do
 
   alias AshQueryBuilder.FilterScope
 
+  def add_argument(%{arguments: arguments} = struct, argument),
+    do: %{struct | arguments: [argument] ++ arguments}
+
+  def replace_argument(%{arguments: arguments} = struct, argument) do
+    with {:ok, arguments} <- find_and_update(arguments, &(&1.name == argument.name), fn _ -> argument end) do
+      {:ok, %{struct | arguments: arguments}}
+    end
+  end
+
+  def add_or_replace_argument(struct, argument) do
+    case replace_argument(struct, argument) do
+      {:error, :not_found} -> add_argument(struct, argument)
+      {:ok, struct} -> struct
+    end
+  end
+
+  def find_argument(%{arguments: arguments}, name) do
+    Enum.find(arguments, fn argument -> argument.name == name end)
+  end
+
+  def remove_argument(struct, name) do
+    arguments = Enum.reject(struct.arguments, fn argument -> argument.name == name end)
+
+    %{struct | arguments: arguments}
+  end
+
+  def reset_arguments(struct), do: %{struct | arguments: []}
+
   def add_filter(%{filters: filters} = struct, filter),
     do: %{struct | filters: [filter] ++ filters}
 

@@ -1,19 +1,33 @@
 defmodule AshQueryBuilder.Parser do
   @moduledoc false
 
-  alias AshQueryBuilder.{Filter, FilterScope, Sorter}
+  alias AshQueryBuilder.{Argument, Filter, FilterScope, Sorter}
 
   def parse(nil, default), do: default
 
   def parse(args, _) do
     args = args |> Base.decode64!() |> :erlang.binary_to_term()
 
-    sorters = Map.get(args, :s, %{})
+    arguments = Map.get(args, :a, %{})
     filters = Map.get(args, :f, %{})
+    sorters = Map.get(args, :s, %{})
 
     AshQueryBuilder.new()
+    |> parse_arguments(arguments)
     |> parse_filters(filters)
     |> parse_sorters(sorters)
+  end
+
+  defp parse_arguments(builder, arguments) do
+    Enum.reduce(arguments, builder, fn {name, values}, builder ->
+      %{v: value} = values
+
+      metadata = Map.get(values, :m)
+
+      argument = Argument.new(name, value, metadata: metadata)
+
+      AshQueryBuilder.add_argument(builder, argument)
+    end)
   end
 
   defp parse_filters(builder_or_scope, filters, add_filter_fn \\ &AshQueryBuilder.add_filter/2) do

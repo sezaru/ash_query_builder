@@ -3,9 +3,21 @@ defmodule AshQueryBuilder do
 
   alias AshQueryBuilder.{Helper, Sorter, ToQuery, ToParams, Parser}
 
-  defstruct filters: [], sorters: []
+  defstruct arguments: [], filters: [], sorters: []
 
   def new, do: struct!(__MODULE__, %{})
+
+  defdelegate add_argument(builder, argument), to: Helper
+
+  defdelegate replace_argument(builder, argument), to: Helper
+
+  defdelegate add_or_replace_argument(builder, argument), to: Helper
+
+  defdelegate find_argument(builder, name), to: Helper
+
+  defdelegate remove_argument(builder, name), to: Helper
+
+  defdelegate reset_arguments(builder), to: Helper
 
   defdelegate add_filter(builder, filter), to: Helper
 
@@ -58,11 +70,19 @@ defmodule AshQueryBuilder do
 
   def reset_sorters(builder), do: %{builder | sorters: []}
 
-  def to_query(builder, query) do
+  def to_query(builder, %Ash.Query{} = query) do
     filters = Enum.reverse(builder.filters)
     sorters = Enum.reverse(builder.sorters)
 
     ToQuery.generate(query, filters, sorters)
+  end
+
+  def to_query(builder, resource, query_fn) when is_function(query_fn) do
+    arguments = builder.arguments
+    filters = Enum.reverse(builder.filters)
+    sorters = Enum.reverse(builder.sorters)
+
+    ToQuery.generate(resource, query_fn, arguments, filters, sorters)
   end
 
   def to_params(builder, opts \\ []), do: ToParams.generate(builder, opts)

@@ -6,12 +6,23 @@ defmodule AshQueryBuilder.ToParams do
   def generate(builder, opts) do
     with_disabled? = Keyword.get(opts, :with_disabled?, false)
 
+    arguments = arguments_to_params(builder.arguments)
     filters = filters_to_params(builder.filters, with_disabled?)
     sorters = sorters_to_params(builder.sorters)
 
-    params = %{f: filters, s: sorters}
+    params = %{a: arguments, f: filters, s: sorters}
 
     params |> :erlang.term_to_binary([{:compressed, 1}]) |> Base.encode64()
+  end
+
+  defp arguments_to_params(arguments) do
+    arguments
+    |> Enum.map(fn argument ->
+      values = %{v: argument.value} |> maybe_add_metadata(argument)
+
+      {argument.name, values}
+    end)
+    |> Enum.into(%{})
   end
 
   defp filters_to_params(filters, with_disabled?) do
