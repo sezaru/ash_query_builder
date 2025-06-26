@@ -69,8 +69,11 @@ defmodule AshQueryBuilder.ToParams do
     |> Enum.into(%{})
   end
 
-  defp maybe_filter_out_disabled(filters, false), do: Enum.filter(filters, & &1.enabled?)
+  defp maybe_filter_out_disabled(filters, false), do: Enum.filter(filters, &enabled?/1)
   defp maybe_filter_out_disabled(filters, true), do: filters
+
+  defp enabled?(%{enabled?: enabled?}), do: enabled?
+  defp enabled?(%FilterScope{filters: filters}), do: Enum.any?(filters, &enabled?/1)
 
   defp maybe_add_enabled_flag(values, _, false), do: values
   defp maybe_add_enabled_flag(values, filter, true), do: Map.put(values, :e, filter.enabled?)
