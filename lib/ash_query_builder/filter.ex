@@ -7,14 +7,14 @@ defmodule AshQueryBuilder.Filter do
 
   @callback operator :: atom
 
-  @callback new(non_neg_integer | String.t(), [atom], atom, any, Keyword.t()) ::
+  @callback new(non_neg_integer | String.t(), [atom], atom | [String.t()], any, Keyword.t()) ::
               Protocol.t()
 
   defmacro __using__(operator: operator) do
     quote do
       @type t :: %__MODULE__{
               id: non_neg_integer | String.t(),
-              field: atom,
+              field: atom | [String.t()],
               path: [atom],
               value: any,
               enabled?: boolean,
