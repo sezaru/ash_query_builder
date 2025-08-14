@@ -7,7 +7,8 @@ defmodule AshQueryBuilder.Helper do
     do: %{struct | arguments: [argument] ++ arguments}
 
   def replace_argument(%{arguments: arguments} = struct, argument) do
-    with {:ok, arguments} <- find_and_update(arguments, &(&1.name == argument.name), fn _ -> argument end) do
+    with {:ok, arguments} <-
+           find_and_update(arguments, &(&1.name == argument.name), fn _ -> argument end) do
       {:ok, %{struct | arguments: arguments}}
     end
   end
